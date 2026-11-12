@@ -1,0 +1,34 @@
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    container: bioconductor/bioconductor_docker:devel
+    env:
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: "true"
+      ## The PAT bundled in the container is invalid (HTTP 401).
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        shell: Rscript {0}
+        run: |
+          BiocManager::install(c("remotes", "rcmdcheck"),
+                               ask = FALSE, update = FALSE)
+          ## Spectra (>= 1.23.7) may not be released yet: use GitHub main.
+          BiocManager::install("rformassspectrometry/Spectra",
+                               ask = FALSE, update = FALSE)
+          remotes::install_deps(dependencies = TRUE,
+                                repos = BiocManager::repositories())
+
+      - name: Check
+        shell: Rscript {0}
+        run: |
+          rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "warning",
+                               check_dir = "check")
