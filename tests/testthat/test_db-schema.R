@@ -48,8 +48,8 @@ test_that(".create_db_schema honours page_size and rejects bad input", {
     expect_error(.create_db_schema(con, c(msLevel = "list")), "unsupported")
     expect_error(.create_db_schema(con, c(peak_start = "integer")),
                  "reserved")
-    expect_error(.create_db_schema(con, c(msLevel = "integer", msLevel = "integer")),
-                 "duplicated")
+    expect_error(.create_db_schema(
+        con, c(msLevel = "integer", msLevel = "integer")), "duplicated")
     expect_error(.create_db_schema(con, c("integer")), "named")
     .create_db_schema(con, character(), page_size = 8192L)
     expect_equal(DBI::dbGetQuery(con, "PRAGMA page_size")[[1L]], 8192L)
@@ -71,7 +71,7 @@ test_that("metadata round trip, values stored as text", {
     con <- DBI::dbConnect(RSQLite::SQLite(), file)
     on.exit(DBI::dbDisconnect(con), add = TRUE, after = FALSE)
     .create_db_schema(con, character())
-    expect_equal(.read_metadata(con), character())
+    expect_length(.read_metadata(con), 0L)
     .write_metadata(con, list(schema_version = 1L, kind = "import",
                               n_spectra = 3L, note = NA))
     md <- .read_metadata(con)
@@ -132,7 +132,7 @@ test_that(".valid_db rejects I1: spectrum_id_ with a gap or not from 1", {
     expect_match(res, "I1", all = FALSE)
 
     con <- .hand_db(c(3L, 1L))
-    DBI::dbExecute(con, "UPDATE spectrum SET spectrum_id_ = spectrum_id_ + 1")
+    DBI::dbExecute(con, "UPDATE spectrum SET spectrum_id_ = spectrum_id_ + 100")
     expect_match(.valid_db(con), "I1", all = FALSE)
 })
 
@@ -142,7 +142,7 @@ test_that(".valid_db rejects I2: peak_id_ with a gap or not from 1", {
     expect_match(.valid_db(con), "I2", all = FALSE)
 
     con <- .hand_db(c(3L, 0L, 5L))
-    DBI::dbExecute(con, "UPDATE peak SET peak_id_ = peak_id_ + 1")
+    DBI::dbExecute(con, "UPDATE peak SET peak_id_ = peak_id_ + 100")
     expect_match(.valid_db(con), "I2", all = FALSE)
 })
 

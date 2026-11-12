@@ -8,6 +8,12 @@
         DBI::dbDisconnect(.(con))
         unlink(.(file))
     }), add = TRUE), envir = .env)
+    DBI::dbExecute(con, "CREATE TABLE metadata (key TEXT PRIMARY KEY,
+        value TEXT)")
+    DBI::dbExecute(con, "CREATE TABLE spectra_variable (name TEXT PRIMARY
+        KEY, r_class TEXT NOT NULL)")
+    DBI::dbExecute(con, "CREATE TABLE source (source_id_ INTEGER PRIMARY KEY,
+        type TEXT NOT NULL)")
     DBI::dbExecute(con, "CREATE TABLE spectrum (spectrum_id_ INTEGER PRIMARY
         KEY, peak_start INTEGER NOT NULL, peak_count INTEGER NOT NULL)")
     DBI::dbExecute(con, "CREATE TABLE peak (peak_id_ INTEGER PRIMARY KEY,
