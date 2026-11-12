@@ -1,4 +1,4 @@
-# MsBackendSQLite — design
+# MsBackendLite — design
 
 Status: design for the first prototype, no code written yet. Date: 2026-11-11.
 
@@ -27,7 +27,7 @@ not been written yet.
 
 ## 1. Purpose
 
-`MsBackendSQLite` is a **read-only** backend for `Spectra` that stores mass
+`MsBackendLite` is a **read-only** backend for `Spectra` that stores mass
 spectrometry data in a single SQLite file.
 
 - m/z and intensity values are stored as plain numeric columns, not BLOBs, so
@@ -68,12 +68,12 @@ uses a layout (section 4) that needs a database which never changes.
 
 ```
  raw files (mzML)                 any Spectra object              several databases
-        │ createMsBackendSQLiteDatabase()   │ export()                    │ mergeSQLiteDatabases()
+        │ createMsBackendLiteDatabase()     │ export()                    │ mergeSQLiteDatabases()
         ▼                                   ▼                             ▼
    A.sqlite, B.sqlite, ...            derived.sqlite                 study.sqlite
    (one per raw file)                 (processing applied)           (pure SQL append)
         │
-        ▼  Spectra("A.sqlite", source = MsBackendSQLite())
+        ▼  Spectra("A.sqlite", source = MsBackendLite())
    read-only backend ── filters, processing queue, reset() ── all in the R object
 ```
 
@@ -87,15 +87,15 @@ Recommended workflow for a batch of raw files:
 
 ```r
 files  <- list.files("raw", pattern = "mzML$", full.names = TRUE)
-report <- createMsBackendSQLiteDatabase(files, outdir = "db")      # 1
+report <- createMsBackendLiteDatabase(files, outdir = "db")        # 1
 report[, c("file", "status", "n_spectra", "n_peaks", "error")]     # 2
 keep   <- report$dbfile[report$status == "ok"]
 mergeSQLiteDatabases(keep, file = "study.sqlite",                  # 3
                      note = "C.mzML excluded: profile MS1")
-sps <- Spectra("study.sqlite", source = MsBackendSQLite())         # 4
+sps <- Spectra("study.sqlite", source = MsBackendLite())           # 4
 sps2 <- sps |> filterMsLevel(2L) |> filterRt(c(300, 1800)) |>
     filterIntensity(c(100, Inf))            # nothing is written; sps is unchanged
-sps3 <- export(sps2, MsBackendSQLite(), file = "ms2_clean.sqlite") # fixed result, new file
+sps3 <- export(sps2, MsBackendLite(), file = "ms2_clean.sqlite")   # fixed result, new file
 ```
 
 ## 4. Database layout
@@ -114,7 +114,7 @@ CREATE TABLE spectra_variable (       -- R class of every spectra variable colum
 
 CREATE TABLE source (                 -- where the data in this file came from
     source_id_      INTEGER PRIMARY KEY,
-    type            TEXT NOT NULL,    -- 'mzML', 'MsBackendSQLite', or a backend class
+    type            TEXT NOT NULL,    -- 'mzML', 'MsBackendLite', or a backend class
     path            TEXT,
     md5             TEXT,
     n_spectra       INTEGER,
@@ -216,7 +216,7 @@ WHERE peak_start != expected;                 -- must be 0
 - Reserved names: `spectrum_id_`, `peak_start`, `peak_count`, `source_id_`,
   `source_spectrum_id_`, `mz`, `intensity`, `dataStorage`. The writer never
   copies a variable with one of these names as an ordinary column. When the
-  input uses `MsBackendSQLite` they are replaced by the new values; when
+  input uses `MsBackendLite` they are replaced by the new values; when
   another backend provides a variable called `spectrum_id_`, `peak_start`,
   `peak_count`, `source_id_` or `source_spectrum_id_`, the writer stops and
   asks the user to rename it.
@@ -258,7 +258,7 @@ missing or not supported.
 
 ```r
 setClass(
-    "MsBackendSQLite",
+    "MsBackendLite",
     contains = "MsBackendCached",
     slots = c(
         dbfile     = "character",     # normalized path, the source of truth
@@ -332,7 +332,7 @@ process that opened it.
 | `tic(object, initial = TRUE)` | `initial = TRUE`: default method (reads `totIonCurrent`). `initial = FALSE`: `ionCount(object)`. |
 | `[`, `extractByIndex` | `[`: `extractByIndex(x, i2index(i, length(x)))`. `extractByIndex`: subset `spectraIds`, `peakStart`, `peakCount`, then `callNextMethod()`. |
 | `backendMerge` | All objects must have the same `dbfile`: concatenate the three slots and the cached data (see `.combine()` in `MsBackendSql`). Different files: stop and point to `mergeSQLiteDatabases()`. |
-| `reset` | `backendInitialize(MsBackendSQLite(), object@dbfile)`. Restores all spectra and drops cached variables. |
+| `reset` | `backendInitialize(MsBackendLite(), object@dbfile)`. Restores all spectra and drops cached variables. |
 | `isReadOnly` | `TRUE` (prototype). `supportsSetBackend` is then `FALSE` by default; converting other data goes through `export()`. |
 | `$<-` | Stop for `spectrum_id_`, `source_id_`, `source_spectrum_id_`, `mz`, `intensity`; otherwise inherited (cache). |
 | `spectraNames` | `NULL`. `spectraNames<-` stops. |
@@ -341,9 +341,9 @@ process that opened it.
 | `export(object, x, file, ...)` | The writer (section 9.3). |
 | `filterMsLevel`, `filterRt`, ... (all spectrum-level filters) | **Not overridden in the first version.** See section 8.2. |
 
-Constructor: `MsBackendSQLite()` returns an empty object. Users write
-`Spectra("A.sqlite", source = MsBackendSQLite())`, which calls
-`backendInitialize(MsBackendSQLite(), "A.sqlite", ...)`.
+Constructor: `MsBackendLite()` returns an empty object. Users write
+`Spectra("A.sqlite", source = MsBackendLite())`, which calls
+`backendInitialize(MsBackendLite(), "A.sqlite", ...)`.
 
 Every method must work on the empty object (no file, zero spectra) and on a
 zero-length subset without opening a connection.
@@ -414,7 +414,7 @@ processing queue and the function, keeps the small result and drops the
 peaks. With `SerialParam()` only one chunk is in memory at a time.
 
 ```r
-.chunk_factor <- function(cnt, budget = getOption("MsBackendSQLite.chunkPeaks", 1e6)) {
+.chunk_factor <- function(cnt, budget = getOption("MsBackendLite.chunkPeaks", 1e6)) {
     cs <- cumsum(as.numeric(cnt))
     if (!length(cs) || cs[length(cs)] <= budget)
         return(factor())                       # small object: no chunking
@@ -440,14 +440,14 @@ behaviour).
 ### 7.3 Limit on a single request
 
 ```r
-.check_peak_limit <- function(n, limit = getOption("MsBackendSQLite.maxPeaks", 5e7)) {
+.check_peak_limit <- function(n, limit = getOption("MsBackendLite.maxPeaks", 5e7)) {
     if (n > limit)
         stop("This request would load ",
              format(n, big.mark = ",", scientific = FALSE),
              " peaks into memory; the limit is ",
              format(limit, big.mark = ",", scientific = FALSE),
              ". Filter the data first, process it in chunks, or raise ",
-             "options(MsBackendSQLite.maxPeaks = ).", call. = FALSE)
+             "options(MsBackendLite.maxPeaks = ).", call. = FALSE)
 }
 ```
 
@@ -544,7 +544,7 @@ new file. Import and export both use it.
    error delete the `.partial` file and stop.
 
 `source_spectrum_id_` is the `spectrum_id_` in the source database when `x`
-uses `MsBackendSQLite`, otherwise the position of the spectrum in `x`.
+uses `MsBackendLite`, otherwise the position of the spectrum in `x`.
 
 ```r
 .peak_stats <- function(z) {                       # z: matrix sorted by m/z
@@ -569,13 +569,13 @@ uses `MsBackendSQLite`, otherwise the position of the spectrum in `x`.
 - Any profile spectrum stops the write. The message says how many spectra of
   which MS level are affected and gives two remedies: convert again with
   msconvert and `--filter "peakPicking vendor msLevel=1-"`, or
-  `export(pickPeaks(sps), MsBackendSQLite(), file = )` (`pickPeaks()` sets
+  `export(pickPeaks(sps), MsBackendLite(), file = )` (`pickPeaks()` sets
   `centroided` to `TRUE`; the export applies it chunk by chunk).
 
 ### 9.2 Import
 
 ```r
-createMsBackendSQLiteDatabase(
+createMsBackendLiteDatabase(
     x,                              # character: raw files (mzML, mzXML)
     outdir = ".",                   # one database per file: <outdir>/<name>.sqlite
                                     # (<name> = file name without .mzML / .mzML.gz / .mzXML)
@@ -616,7 +616,7 @@ Report columns: `file`, `dbfile`, `status` (`ok` | `failed` | `skipped`),
 ### 9.3 Export
 
 ```r
-export(sps, backend = MsBackendSQLite(), file = "derived.sqlite",
+export(sps, backend = MsBackendLite(), file = "derived.sqlite",
        chunkPeaks = 1e6, pageSize = 32768L, overwrite = FALSE)
 ```
 
@@ -678,7 +678,7 @@ each input. Input databases are kept.
 ## 10. Package
 
 ```
-Package: MsBackendSQLite
+Package: MsBackendLite
 Depends: R (>= 4.1.0), Spectra (>= 1.23.7)
 Imports: methods, tools, utils, DBI, RSQLite, ProtGenerics, S4Vectors,
          IRanges, BiocParallel, MsCoreUtils
@@ -692,14 +692,14 @@ Files:
 
 ```
 R/hidden_aliases.R
-R/MsBackendSQLite.R             class, validity, S4 methods
-R/MsBackendSQLite-functions.R   .dbcon, .fetch_peaks, .fetch_spectra_data, .chunk_factor, ...
+R/MsBackendLite.R               class, validity, S4 methods
+R/MsBackendLite-functions.R     .dbcon, .fetch_peaks, .fetch_spectra_data, .chunk_factor, ...
 R/db-schema.R                   DDL, metadata, .valid_db
 R/db-write.R                    .write_spectra_db, .peak_stats, export method
-R/createMsBackendSQLiteDatabase.R
+R/createMsBackendLiteDatabase.R
 R/mergeSQLiteDatabases.R
 tests/testthat.R, tests/testthat/test_*.R
-vignettes/MsBackendSQLite.Rmd
+vignettes/MsBackendLite.Rmd
 ```
 
 Code style as in `Spectra`: S4, camelCase for exported names, internal
@@ -707,7 +707,7 @@ functions start with a dot, 4 spaces, lines up to 80 characters, `stop()` /
 `stopifnot()` for checks, `message()` for progress, roxygen2 with markdown
 (`#'`), methods of one topic documented on one page.
 
-Exported: `MsBackendSQLite()`, `createMsBackendSQLiteDatabase()`,
+Exported: `MsBackendLite()`, `createMsBackendLiteDatabase()`,
 `mergeSQLiteDatabases()`, and the S4 methods of section 5.2.
 
 Functions return structured results (the import report is a `data.frame`),
@@ -728,7 +728,7 @@ agent later.
 3. **`Spectra` compliance suite.** As in `MsBackendSql/tests/testthat.R`:
 
    ```r
-   be <- <initialized MsBackendSQLite>
+   be <- <initialized MsBackendLite>
    test_suite <- system.file("test_backends", "test_MsBackend", package = "Spectra")
    test_dir(test_suite, stop_on_failure = TRUE)
    ```

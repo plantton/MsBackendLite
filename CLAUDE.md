@@ -1,4 +1,4 @@
-# MsBackendSQLite
+# MsBackendLite
 
 An R package: a read-only SQLite backend for the Bioconductor `Spectra`
 package. It follows the conventions of the RforMassSpectrometry packages
@@ -70,5 +70,5 @@ Clone outside this repository and read when implementing a method:
 ```sh
 Rscript -e 'roxygen2::roxygenise()'
 Rscript -e 'devtools::load_all(); testthat::test_file("tests/testthat/test_<x>.R")'
-R CMD build . && R CMD check --no-manual MsBackendSQLite_*.tar.gz
+R CMD build . && R CMD check --no-manual MsBackendLite_*.tar.gz
 ```

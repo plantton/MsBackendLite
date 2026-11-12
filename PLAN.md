@@ -1,4 +1,4 @@
-# MsBackendSQLite — implementation plan
+# MsBackendLite — implementation plan
 
 Goal: a working prototype (milestones M0–M4), then documentation (M5).
 `DESIGN.md` is the reference for every decision; section numbers below point
@@ -135,15 +135,15 @@ and the stored values equal the input.
   §8.1;
   database md5 unchanged after filters, processing and `reset()`;
   `saveRDS()` round trip; chunked operations give the same result with a
-  small `MsBackendSQLite.chunkPeaks`; the peak limit error.
+  small `MsBackendLite.chunkPeaks`; the peak limit error.
 
 Accepted when: the compliance suite passes and
-`Spectra(file, source = MsBackendSQLite())` behaves like the in-memory object
+`Spectra(file, source = MsBackendLite())` behaves like the in-memory object
 it was exported from.
 
 ## M3 — Import from raw files (DESIGN §9.2)
 
-- [ ] **3.1 `feat-import`** — `createMsBackendSQLiteDatabase()` with
+- [ ] **3.1 `feat-import`** — `createMsBackendLiteDatabase()` with
   `SerialParam()`: `msLevel`, fail-fast profile check, report
   (`data.frame`, CSV, `import_report` table), `.partial` handling, skip
   existing files, `overwrite`. Before writing tests, check which
