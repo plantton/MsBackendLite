@@ -11,6 +11,8 @@ jobs:
     container: bioconductor/bioconductor_docker:devel
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: "true"
+      ## The PAT bundled in the container is invalid (HTTP 401).
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
