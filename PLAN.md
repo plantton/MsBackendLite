@@ -119,7 +119,7 @@ Accepted when: the empty package passes `R CMD check` in CI.
 Accepted when: a synthetic `Spectra` object is written to a valid database
 and the stored values equal the input.
 
-- [ ] **1.3 CI on Windows and macOS** (`ci-matrix`): add a `check-os` job
+- [x] **1.3 CI on Windows and macOS** (`ci-matrix`): add a `check-os` job
   (`windows-latest`, `macos-latest`) next to the Ubuntu job. `Spectra` from
   GitHub, Bioconductor devel, `mzR` / `MsDataHub` left to the Ubuntu job.
   Starts with `continue-on-error: true`; remove it when the job is stable.
