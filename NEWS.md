@@ -1,5 +1,9 @@
 # MsBackendLite 0.99
 
+## Changes in 0.99.4
+
+- CI: add a Windows and macOS job next to the Ubuntu job.
+
 ## Changes in 0.99.3
 
 - Add the `MsBackendLite` class and constructor, and `export()` to write a
