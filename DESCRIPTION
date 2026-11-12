@@ -1,6 +1,6 @@
 Package: MsBackendLite
 Title: Read-only SQLite Backend for Spectra
-Version: 0.99.2
+Version: 0.99.3
 Authors@R:
     person(given = "Chong", family = "Tang",
            email = "chong.tang.mat@gmail.com", role = c("aut", "cre"))
@@ -41,3 +41,8 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.1
+Collate: 
+    'hidden_aliases.R'
+    'MsBackendLite.R'
+    'db-schema.R'
+    'db-write.R'

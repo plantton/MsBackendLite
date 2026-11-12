@@ -1,5 +1,10 @@
 # MsBackendLite 0.99
 
+## Changes in 0.99.3
+
+- Add the `MsBackendLite` class and constructor, and `export()` to write a
+  `Spectra` object to a new database (no reading yet).
+
 ## Changes in 0.99.2
 
 - Add the database schema and `.valid_db()` (invariants I1-I4), internal.
