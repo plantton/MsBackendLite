@@ -1,0 +1,8 @@
+^CLAUDE\.md$
+^DESIGN\.md$
+^PLAN\.md$
+^\.github$
+^\.editorconfig$
+^\.git$
+^.*\.Rproj$
+^\.Rproj\.user$

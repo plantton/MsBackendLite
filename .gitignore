@@ -1,2 +1,6 @@
 *~
 .Rhistory
+.Rproj.user
+.RData
+*.Rcheck/
+MsBackendLite_*.tar.gz
