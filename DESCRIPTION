@@ -1,6 +1,6 @@
 Package: MsBackendLite
 Title: Read-only SQLite Backend for Spectra
-Version: 0.99.1
+Version: 0.99.2
 Authors@R:
     person(given = "Chong", family = "Tang",
            email = "chong.tang.mat@gmail.com", role = c("aut", "cre"))
