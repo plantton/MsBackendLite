@@ -53,7 +53,7 @@ code. Do not diverge silently.
 
 ## M0 — Environment and repository
 
-- [ ] **0.1 Inspect the machine and report**: R version,
+- [x] **0.1 Inspect the machine and report**: R version,
   `BiocManager::version()`, free disk space, whether `gh` is authenticated,
   whether Docker exists.
 - [x] **0.2 Environment.** `Spectra` 1.23.7 needs `MsCoreUtils (>= 1.23.6)`
@@ -67,8 +67,8 @@ code. Do not diverge silently.
   - Route C: Existing R 4.5.0; Bioconductor packages for R 4.5 plus
     ProtGenerics, MsCoreUtils, MetaboCoreUtils and Spectra (1.23.7) from
     GitHub with upgrade = 'never'. CI stays on R 4.6 devel.
-- [ ] **0.3 Repository** (assumed `plantton/MsBackendLite`, confirm with
-  the owner): `DESCRIPTION` (DESIGN §10), `NAMESPACE` via roxygen2,
+- [x] **0.3 Repository** (`plantton/MsBackendLite`): `DESCRIPTION`
+  (DESIGN §10), `NAMESPACE` via roxygen2,
   `README.md`, `NEWS.md`, `.Rbuildignore` (`CLAUDE.md`, `DESIGN.md`,
   `PLAN.md`, `.github`), `.gitignore`, `.editorconfig` (copy from `Spectra`),
   `R/hidden_aliases.R`, `tests/testthat.R`.

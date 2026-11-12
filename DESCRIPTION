@@ -1,0 +1,43 @@
+Package: MsBackendLite
+Title: Read-only SQLite Backend for Spectra
+Version: 0.99.0
+Authors@R:
+    person(given = "Chong", family = "Tang",
+           email = "chong.tang.mat@gmail.com", role = c("aut", "cre"))
+Description: A read-only backend for the Spectra package that stores mass
+    spectrometry data in a single SQLite file. m/z and intensity values are
+    stored as plain numeric columns, one row per peak, and peaks are read in
+    chunks sized by number of peaks, so data larger than memory can be
+    analysed on an ordinary computer. Nothing a user does to a Spectra object
+    changes the database; every filter can be undone.
+Depends:
+    R (>= 4.1.0),
+    Spectra (>= 1.23.7)
+Imports:
+    methods,
+    tools,
+    utils,
+    DBI,
+    RSQLite,
+    ProtGenerics,
+    S4Vectors,
+    IRanges,
+    BiocParallel,
+    MsCoreUtils
+Suggests:
+    testthat (>= 3.0.0),
+    mzR,
+    MsDataHub,
+    knitr,
+    rmarkdown,
+    BiocStyle,
+    roxygen2
+License: Artistic-2.0
+URL: https://github.com/plantton/MsBackendLite
+BugReports: https://github.com/plantton/MsBackendLite/issues
+biocViews: Infrastructure, MassSpectrometry, Proteomics, Metabolomics,
+    DataImport
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Config/testthat/edition: 3
+Config/roxygen2/version: 8.1.1
