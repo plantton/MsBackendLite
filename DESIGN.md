@@ -831,4 +831,3 @@ the target laptop. They show the approach works; they are not benchmarks.
   with the installed version, otherwise attach normally.
 - `dataOrigin` is stored as text in every row. Fine for now; a lookup table
   would save space in merged databases.
-- Repository location is assumed to be `plantton/MsBackendLite`.
