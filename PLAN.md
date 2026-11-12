@@ -102,7 +102,7 @@ Accepted when: the empty package passes `R CMD check` in CI.
 
 ## M1 — Schema and writer (DESIGN §4, §9.1, §9.3)
 
-- [ ] **1.1 `feat-schema`** — `R/db-schema.R`: create tables, type mapping,
+- [x] **1.1 `feat-schema`** — `R/db-schema.R`: create tables, type mapping,
   read/write `metadata` and `spectra_variable`, `.valid_db()`.
   Tests: build a tiny database by hand; `.valid_db()` accepts it and
   rejects each broken invariant I1–I4.
