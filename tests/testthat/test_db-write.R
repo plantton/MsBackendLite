@@ -28,6 +28,7 @@ test_that(".clean_peak_matrix drops NA rows and sorts by m/z", {
 test_that(".plan_chunks uses peaksCount, else a fixed number of spectra", {
     expect_equal(.plan_chunks(c(5, 5, 5, 5), 10), list(1:2, 3:4))
     expect_equal(.plan_chunks(c(25, 1, 1), 10), list(1L, 2:3))
+    expect_equal(.plan_chunks(c(3, 25, 1, 1), 10), list(1:2, 3:4))
     expect_equal(.plan_chunks(c(0, 0, 0), 10, chunkSpectra = 2L),
                  list(1:2, 3L))
     expect_equal(.plan_chunks(c(NA, 1, 1), 10, chunkSpectra = 2L),
@@ -37,6 +38,15 @@ test_that(".plan_chunks uses peaksCount, else a fixed number of spectra", {
     expect_equal(.plan_chunks(numeric(), 10), list())
 })
 
+test_that(".quantile7 equals stats::quantile type 7", {
+    set.seed(1)
+    for (x in list(runif(1), runif(2), runif(17), c(3, 1, 2, 2)))
+        for (p in c(0, 0.25, 0.9, 1))
+            expect_equal(.quantile7(x, p),
+                         unname(quantile(x, p, type = 7)))
+    expect_true(is.na(.quantile7(numeric(), 0.5)))
+})
+
 test_that(".is_centroided_peaks mirrors the Spectra heuristic", {
     prof <- cbind(mz = seq(100, 101, by = 0.001),
                   intensity = dnorm(seq(-3, 3, length.out = 1001)) * 1e4)
@@ -44,6 +54,13 @@ test_that(".is_centroided_peaks mirrors the Spectra heuristic", {
     cent <- cbind(mz = seq(100, 1000, by = 10), intensity = 1:91)
     expect_true(.is_centroided_peaks(cent))
     expect_true(is.na(.is_centroided_peaks(cent[0, , drop = FALSE])))
+    set.seed(2)
+    for (i in 1:20) {
+        k <- sample(2:200, 1)
+        z <- cbind(sort(runif(k, 100, 100 + k / 20)), runif(k))
+        expect_identical(.is_centroided_peaks(z),
+                         unname(Spectra:::.peaks_is_centroided(z)))
+    }
 })
 
 test_that("export() writes a valid database equal to the input", {
@@ -77,7 +94,8 @@ test_that("export() writes a valid database equal to the input", {
     ## peaks: values and m/z order (spectrum 5 was unsorted with NAs)
     for (i in seq_along(sps)) {
         p <- .sql_peaks(con, i)
-        expect_equal(unname(as.matrix(p)), unname(pks[[i]]))
+        expect_equal(unname(cbind(as.numeric(p$mz), as.numeric(p$intensity))),
+                     unname(pks[[i]]), info = paste("spectrum", i))
         expect_false(is.unsorted(p$mz))
     }
     expect_equal(nrow(.sql_peaks(con, 5L)), 5L)

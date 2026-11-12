@@ -101,13 +101,17 @@
     invisible(con)
 }
 
-#' Indices of DESIGN 4.1, to be created after all rows are written.
+#' Indices of DESIGN 4.1, to be created after all rows are written. An index
+#' is skipped if its columns are not in the `spectrum` table.
 #' @noRd
 .create_db_indices <- function(con) {
-    DBI::dbExecute(con, "CREATE INDEX idx_spectrum_mslevel_rtime
-                         ON spectrum (\"msLevel\", \"rtime\")")
-    DBI::dbExecute(con, "CREATE INDEX idx_spectrum_precursormz
-                         ON spectrum (\"precursorMz\")")
+    have <- DBI::dbListFields(con, "spectrum")
+    if (all(c("msLevel", "rtime") %in% have))
+        DBI::dbExecute(con, "CREATE INDEX idx_spectrum_mslevel_rtime
+                             ON spectrum (\"msLevel\", \"rtime\")")
+    if ("precursorMz" %in% have)
+        DBI::dbExecute(con, "CREATE INDEX idx_spectrum_precursormz
+                             ON spectrum (\"precursorMz\")")
     invisible(con)
 }
 
