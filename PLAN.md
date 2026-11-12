@@ -106,7 +106,7 @@ Accepted when: the empty package passes `R CMD check` in CI.
   read/write `metadata` and `spectra_variable`, `.valid_db()`.
   Tests: build a tiny database by hand; `.valid_db()` accepts it and
   rejects each broken invariant I1–I4.
-- [ ] **1.2 `feat-writer`** — class definition and constructor only
+- [x] **1.2 `feat-writer`** — class definition and constructor only
   (DESIGN §5), `R/db-write.R`: chunk planning, `.peak_stats()`, peak
   clean-up (drop `NA`, sort by m/z), profile check, `.write_spectra_db()`,
   `export()` method (returns the file path invisibly for now).
