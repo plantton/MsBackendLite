@@ -187,12 +187,9 @@ test_that(".valid_db reports missing tables and does not error", {
 test_that(".valid_db works on a read-only connection and leaves the file", {
     con <- .hand_db(c(3L, 0L, 5L))
     file <- DBI::dbGetInfo(con)$dbname
-    DBI::dbDisconnect(con)
     md5 <- unname(tools::md5sum(file))
     ro <- DBI::dbConnect(RSQLite::SQLite(), file, flags = RSQLite::SQLITE_RO)
+    on.exit(DBI::dbDisconnect(ro), add = TRUE)
     expect_true(.valid_db(ro))
-    DBI::dbDisconnect(ro)
     expect_equal(unname(tools::md5sum(file)), md5)
-    ## re-open so the helper's cleanup has a live connection
-    assign("con", DBI::dbConnect(RSQLite::SQLite(), file), environment())
 })
