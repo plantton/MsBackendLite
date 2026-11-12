@@ -2,8 +2,8 @@ Package: MsBackendLite
 Title: Read-only SQLite Backend for Spectra
 Version: 0.99.0
 Authors@R:
-    person(given = "AUTHOR_GIVEN_NAME", family = "AUTHOR_FAMILY_NAME",
-           email = "AUTHOR_EMAIL", role = c("aut", "cre"))
+    person(given = "Chong", family = "Tang",
+           email = "chong.tang.mat@gmail.com", role = c("aut", "cre"))
 Description: A read-only backend for the Spectra package that stores mass
     spectrometry data in a single SQLite file. m/z and intensity values are
     stored as plain numeric columns, one row per peak, and peaks are read in
