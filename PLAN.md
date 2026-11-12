@@ -72,7 +72,7 @@ code. Do not diverge silently.
   `README.md`, `NEWS.md`, `.Rbuildignore` (`CLAUDE.md`, `DESIGN.md`,
   `PLAN.md`, `.github`), `.gitignore`, `.editorconfig` (copy from `Spectra`),
   `R/hidden_aliases.R`, `tests/testthat.R`.
-- [ ] **0.4 CI**: one job in the Bioconductor devel container, see below.
+- [x] **0.4 CI**: one job in the Bioconductor devel container, see below.
 
 Starting point for `.github/workflows/check.yml`:
 
