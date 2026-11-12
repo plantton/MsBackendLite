@@ -56,14 +56,17 @@ code. Do not diverge silently.
 - [ ] **0.1 Inspect the machine and report**: R version,
   `BiocManager::version()`, free disk space, whether `gh` is authenticated,
   whether Docker exists.
-- [ ] **0.2 Environment.** `Spectra` 1.23.7 needs `MsCoreUtils (>= 1.23.6)`
+- [x] **0.2 Environment.** `Spectra` 1.23.7 needs `MsCoreUtils (>= 1.23.6)`
   and `ProtGenerics (>= 1.39.2)`, which means Bioconductor devel. CI is the
-  reference environment whichever route is used.
+  reference environment whichever route is used. Done with route C.
   - Route A (preferred when disk is short): R 4.6 with
     `BiocManager::install(version = "devel")`, then `Spectra` from GitHub
     `main`, `DBI`, `RSQLite`, `testthat`, `roxygen2`.
   - Route B: Docker image `bioconductor/bioconductor_docker:devel`
     (several GB).
+  - Route C: Existing R 4.5.0; Bioconductor packages for R 4.5 plus
+    ProtGenerics, MsCoreUtils, MetaboCoreUtils and Spectra (1.23.7) from
+    GitHub with upgrade = 'never'. CI stays on R 4.6 devel.
 - [ ] **0.3 Repository** (assumed `plantton/MsBackendLite`, confirm with
   the owner): `DESCRIPTION` (DESIGN §10), `NAMESPACE` via roxygen2,
   `README.md`, `NEWS.md`, `.Rbuildignore` (`CLAUDE.md`, `DESIGN.md`,
